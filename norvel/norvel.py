@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import os
 import sys
 import time
+import getopt
 from concurrent import futures
 
 reload(sys)
@@ -66,7 +67,7 @@ def download_norvel(list):
         for alink in list:
             section_url = alink['href']
             get_section_from_page(norvel_host + section_url)
-            count = count+1
+            count = count + 1
     except Exception as e:
         print e.message
     return count
@@ -76,7 +77,7 @@ def print_done(future):
     print "============Done========={}".format(future.result())
 
 
-if __name__ == '__main__':
+def main():
     print 'start download, time:', time.ctime(time.time())
     start_time = time.clock()
     all_urls = get_list()
@@ -93,3 +94,26 @@ if __name__ == '__main__':
         curr_count = f.result()
         actual_count = actual_count + curr_count
     print "expect count:{},actual count:,cost time {}".format(len(all_urls), actual_count, time.clock() - start_time)
+
+
+if __name__ == '__main__':
+    arguments = sys.argv[1:]
+    if len(arguments)<=1:
+        print 'norvel.py -t <target> -h  -s <start>'
+        print 'or norvel.py --target <target> --help '
+        exit(2)
+    try:
+        opts, args = getopt.getopt(arguments, "ht:s:", ["help", "target=", "start"])
+    except getopt.GetoptError as e:
+        print 'norvel.py -t <target> -h  -s <start>'
+        print 'or norvel.py --target <target> --help '
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "help"):
+            print 'Nothing'
+            sys.exit(2)
+        if opt in ("-t", "target"):
+            print 'save target:', arg
+        if opt in ("-s", "start"):
+            print 'featch start url:', arg
+            # main()
